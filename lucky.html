@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- import Vue before Element -->
+  <script src="https://cdn.bootcss.com/vue/2.5.13/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <el-container>
+      <el-header>抽奖活动</el-header>
+      <el-main>
+        <el-row type="flex" justify="space-around">
+          <el-col :span="8">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>幸运儿</span>
+                <span style="float:right">{{ this.luckyUsers.length }}位</span>
+              </div>
+              <div v-for="user in luckyUsers" class="text item">
+                {{ user }}
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-button @click="start">开始抽奖</el-button>
+            <el-button @click="stop">停止抽奖</el-button>
+            <div class="total">
+                <span >
+                  参与人数：共{{ users.length + luckyUsers.length }}人
+                </span>
+              </div>                
+          </el-col>
+        </el-row>
+      </el-main>
+    </el-container>
+  </div>
+</body>
+<script>
+  // 制造假数据（总人数）
+  var users = function () {
+    let users = [];
+    for (let i = 0; i < 100; i++) {
+      users.push("user " + i)
+    }
+    return users;
+  }()
+  new Vue({
+    el: '#app',
+    data: {
+      users: users,    // 总用户
+      luckyUsers: [],  // 幸运用户
+      isStop: false,   // 停止标志
+      luckyNumber: 1,  // 幸运号码
+      doubleKill: [],  // 多次中奖
+    },
+    methods: {
+      start() {
+        console.log("开始抽奖")
+        this.isStop = false;
+        this.run();
+      },
+      run() {
+        if (this.isStop) {
+          return;
+        }
+        setTimeout(this.run, 1);
+        // 控制抽奖数字在抽奖人数范围内
+        if (this.luckyNumber > this.users.length) {
+          this.luckyNumber = 1;
+        }
+        console.log(this.luckyNumber)
+        this.luckyNumber += 1
+      },
+      stop() {
+        this.isStop = true;
+        console.log("停止抽奖")
+        this.luckyUsers.push(this.users[this.luckyNumber]);
+        // 移除已经中奖的人儿
+        this.users = this.users.filter(user => user != this.users[this.luckyNumber]);
+      }
+    }
+  })
+</script>
+<style>
+  /* 框架 */
+  .el-header {
+    background-color: #B3C0D1;
+    color: #333;
+    text-align: center;
+    line-height: 60px;
+  }
+  .el-main {
+    background-color: #E9EEF3;
+  }
+  /* 卡片 */
+  .text {
+    font-size: 14px;
+  }
+  .item {
+    margin-bottom: 18px;
+  }
+  .box-card {
+    width: 480px;
+  }
+  .total {
+    margin: 20px;
+  }
+</style>
+
+</html>
